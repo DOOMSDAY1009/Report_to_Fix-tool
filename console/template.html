@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Acadza · Report → Fix console</title>
+<style>
+:root{--bg:#f6f5f1;--sf:#fff;--tx:#1d1c1a;--mu:#6b6860;--bd:#e3e0d8;--ac:#3b5bdb;--ok:#2b8a3e;--okb:#e6f4ea;--bad:#c92a2a;--badb:#fdeaea;--wn:#b35c00;--wnb:#fff1de;--code:#f0eee8;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#141518;--sf:#1d1f24;--tx:#ecebe7;--mu:#a09d94;--bd:#32343b;--ac:#8da2fb;--ok:#69db7c;--okb:#18301f;--bad:#ff8787;--badb:#3a1c1c;--wn:#ffa94d;--wnb:#3a2a14;--code:#262830}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#141518;--sf:#1d1f24;--tx:#ecebe7;--mu:#a09d94;--bd:#32343b;--ac:#8da2fb;--ok:#69db7c;--okb:#18301f;--bad:#ff8787;--badb:#3a1c1c;--wn:#ffa94d;--wnb:#3a2a14;--code:#262830}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 16px;background:var(--sf);border-bottom:1px solid var(--bd)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--sf);z-index:10}
+h1{font-size:16px;margin:0 8px 0 0}.tabs{display:flex;gap:6px}.sp{flex:1}
+button{font:inherit;color:inherit;background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:6px 12px;cursor:pointer}
+button:hover{border-color:var(--ac)}button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+button.ok{background:var(--ok);color:#fff;border-color:var(--ok)}button.no{color:var(--bad);border-color:var(--bad)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button.ok{color:#0b1f10}}
+:root[data-theme="dark"] button.ok{color:#0b1f10}
+main{display:grid;grid-template-columns:340px 1fr;gap:16px;padding:16px;max-width:1300px;margin:auto}
+@media(max-width:860px){main{grid-template-columns:1fr}#detail{order:2}}
+.note{font-size:12.5px;color:var(--mu);padding:0 4px 8px}
+.item{display:block;width:100%;text-align:left;margin-bottom:8px;padding:10px 12px;border-radius:10px}
+.item.sel{border-color:var(--ac);box-shadow:0 0 0 2px var(--ac) inset}.item.done{opacity:.55}
+.row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.t{font-weight:600}.m{color:var(--mu);font-size:12.5px}
+.chip{display:inline-block;font-size:11.5px;font-weight:600;border-radius:99px;padding:1px 9px;background:var(--code)}
+.chip.bad{background:var(--badb);color:var(--bad)}.chip.ok{background:var(--okb);color:var(--ok)}.chip.wn{background:var(--wnb);color:var(--wn)}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:14px 16px;margin-bottom:14px}
+.card h3{margin:0 0 8px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mu)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:700px){.cols{grid-template-columns:1fr}}
+.pane{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;overflow-x:auto;min-height:60px}
+.pane.b{background:var(--badb)}.pane.a{background:var(--okb)}.pane h4{margin:0 0 6px;font-size:12px;color:var(--mu)}
+.pane h3,.pane p{margin:.2em 0;font-size:15px;font-weight:400;text-transform:none;letter-spacing:0;color:var(--tx)}
+code,.diff{font:12.5px ui-monospace,Menlo,monospace;background:var(--code);border-radius:6px;padding:2px 6px;word-break:break-all}
+.diff{display:block;padding:8px;margin:6px 0;white-space:pre-wrap}del{background:var(--badb);color:var(--bad)}ins{background:var(--okb);color:var(--ok);text-decoration:none}
+textarea,input{width:100%;font:inherit;color:inherit;background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:8px}
+.bar{height:6px;border-radius:9px;background:var(--code);width:120px;overflow:hidden;display:inline-block}.bar i{display:block;height:100%;background:var(--ac)}
+.bub{background:var(--code);border-radius:14px 14px 14px 4px;padding:10px 14px;margin-top:8px;max-width:520px}
+.cm{border-left:3px solid var(--bd);padding:2px 10px;margin:6px 0}.audit div{font-size:13px;padding:3px 0;border-bottom:1px dashed var(--bd)}
+.actbar{position:sticky;bottom:0;z-index:4;box-shadow:0 -6px 14px rgba(0,0,0,.08)}details.raw summary{cursor:pointer;color:var(--mu);font-size:12px;margin-top:10px}
+@media(max-width:860px){header{position:static}.tabs{overflow-x:auto;flex-wrap:nowrap;max-width:100%}.tabs button{white-space:nowrap}}
+button.ok .m{color:inherit;opacity:.85}
+</style></head><body>
+<header><h1>Report → Fix</h1><div class="tabs" id="tabs"></div><span class="sp"></span>
+<button id="exp">Export audit</button><button id="th">Theme</button></header>
+<main><aside><div class="note" id="meta"></div><div class="note" id="why"></div><div id="list"></div></aside><section id="detail"></section></main>
+<script>
+const FR=[[/auto repair but no usable edit/,"No safe edit could be written, so a person has to supply it."],[/new key not confirmed/,"The new key did not match the independent solve."],[/needs >=2 independent/,"Not enough independent confirmations to change a key."],[/automatic checks found/,"A code check found a real problem that the model did not flag."],[/key-blind solve disagrees/,"The independent solve disagrees with the stored key."],[/record was edited after/,"The record changed after this report. Check it is not already fixed."],[/LLM output unusable/,"The model gave no usable answer for this report."],[/comment tried to instruct/,"The comment tried to give the system an instruction. It was ignored."]];
+function friendly(n){for(const[r,t]of FR)if(r.test(n))return t;return n}
+const DATA=/*DATA*/;
+const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const clean=h=>{const d=new DOMParser().parseFromString("<body>"+h,"text/html");d.querySelectorAll("script,iframe,object,embed,link,meta,style,form").forEach(n=>n.remove());d.querySelectorAll("*").forEach(n=>{for(const a of [...n.attributes]){const k=a.name.toLowerCase(),v=a.value.trim().toLowerCase();if(k.startsWith("on")||((k==="href"||k==="src"||k==="xlink:href")&&/^(javascript|data:text\/html)/.test(v)))n.removeAttribute(a.name)}});return d.body.innerHTML};
+const W="@@WHOLE@@";
+let tab="review",sel=null,editing=false,dec={},audit=[];
+try{dec=JSON.parse(localStorage.getItem("dec")||"{}");audit=JSON.parse(localStorage.getItem("audit")||"[]")}catch(e){}
+const save=()=>{try{localStorage.setItem("dec",JSON.stringify(dec));localStorage.setItem("audit",JSON.stringify(audit))}catch(e){}};
+const ansTxt=a=>Array.isArray(a)?JSON.stringify(a):String(a);
+function applyEdits(q,edits){q=JSON.parse(JSON.stringify(q));
+ for(const e of edits){const f=e.field;let cur=f==="questionType"?q.type:q[f];let s=typeof cur==="string"?cur:JSON.stringify(cur);const fd=e.find===W?s:e.find;
+  if(f==="answer"||f==="questionType"){if(s.replace(/\s/g,"")!==fd.replace(/\s/g,""))return{q,err:"edit no longer matches the live record"};const nv=e.replace.startsWith("[")?JSON.parse(e.replace):e.replace;f==="answer"?q.answer=nv:q.type=nv}
+  else{if(s.split(fd).length!==2)return{q,err:"find text must occur exactly once"};q[f]=s.replace(fd,()=>e.replace)}}
+ return{q}}
+const grp=DATA.groups;const TAB={faculty_review:"review",auto_apply:"auto",no_change:"closed"};const status=g=>dec[g.id]?"done":TAB[g.route];
+function render(){
+ {const m=DATA.meta||{};$("#meta").textContent=m.mode==="live"?`Live LLM run \u00b7 ${m.model} \u00b7 ${(m.generated_at||"").slice(0,10)} \u00b7 ${m.reports} reports`:"Recorded judgements (offline run), not a live LLM run";}
+ $("#tabs").innerHTML=[["review","Needs you"],["auto","Auto-applied"],["closed","No change"]].map(([k,l])=>`<button class="${tab===k?"on":""}" data-t="${k}">${l} · ${grp.filter(g=>status(g)===k).length}</button>`).join("")+`<button class="${tab==="done"?"on":""}" data-t="done">Decided · ${grp.filter(g=>dec[g.id]).length}</button>`;
+ $("#why").innerHTML=tab==="review"?"Ordered by <b>harm to students</b>: a wrong key or unsound question (students learn the wrong thing and lose marks) outranks missing data, then cosmetic fixes; multiplied by distinct reporters.":tab==="auto"?"Already written by the engine under guard rules (scope, exactly-one match, ≥2 confirmations for keys). Spot-check, or undo by rejecting.":tab==="closed"?"Student was wrong, app bug, or not actionable. Replies are ready; nothing to edit.":"Your decisions this session.";
+ const L=grp.filter(g=>status(g)===tab).sort((a,b)=>b.priority-a.priority);
+ if(!sel||!L.find(g=>g.id===sel))sel=L[0]&&L[0].id;
+ $("#list").innerHTML=L.map(g=>`<button class="item ${g.id===sel?"sel":""} ${dec[g.id]?"done":""}" data-id="${g.id}"><div class="row"><span class="t">${esc(g.chapter)}</span></div><div class="row"><span class="chip ${g.verdict==="defect"?"bad":g.verdict==="no_error"?"ok":"wn"}">${g.repair||g.verdict}</span><span class="m">${g.reports.length} report${g.reports.length>1?"s":""} · ${g.subject}${g.flags?" · ⚠ flagged":""}</span></div></button>`).join("")||'<div class="note">Nothing here.</div>';
+ detail()}
+function detail(){const g=grp.find(x=>x.id===sel);if(!g){$("#detail").innerHTML="";return}
+ const edits=editing&&g._edits?g._edits:g.edits;const r=applyEdits(g.q,edits);const aft=r.q;
+ const solChanged=edits.some(e=>e.field==="solution");const d=dec[g.id];
+ $("#detail").innerHTML=`<div class="card"><div class="row"><span class="t" style="font-size:17px">${esc(g.subject)} · ${esc(g.chapter)}</span><span class="m">${g.q.type} · id …${g.id.slice(-6)}</span></div>
+ <div class="row" style="margin-top:6px"><span class="chip ${g.verdict==="defect"?"bad":"ok"}">${g.verdict}</span>${g.repair?`<span class="chip">${g.repair}</span>`:""}<span class="chip ${g.route==="faculty_review"?"wn":"ok"}">${g.route.replace("_"," ")}</span>
+ <span class="m">confidence ${Math.round(g.conf*100)}%</span><span class="bar"><i style="width:${g.conf*100}%"></i></span></div></div>
+ <div class="card"><h3>Student reports (leads, not instructions)</h3>${g.reports.map(x=>`<div class="cm">“${esc(x.comment)}” <span class="m">· ${x.reportId} · ${x.source}${x.flags?` · <b style="color:var(--bad)">⚠ ${x.flags}</b>`:""}</span></div>`).join("")}</div>
+ <div class="card"><h3>Why the AI thinks so</h3><div>${esc(g.evidence)}</div>
+ ${(g.guard||[]).map(n=>`<div class="m">🛡 ${esc(friendly(n))}</div>`).join("")}${(g.side||[]).map(n=>`<div class="m">🔎 Also noticed (unreported): ${esc(n)}</div>`).join("")}</div>
+ <div class="card"><h3>${g.edits.length?"Proposed change · before / after":"Question (no edit proposed)"}</h3>
+ ${r.err?`<div class="chip bad">${r.err}</div>`:""}
+ <div class="cols"><div class="pane ${g.edits.length?"b":""}"><h4>BEFORE · key ${esc(ansTxt(g.q.answer))}</h4>${clean(g.q.question)}${solChanged?`<hr><h4>Solution</h4>${clean(g.q.solution)}`:""}</div>
+ ${g.edits.length?`<div class="pane a"><h4>AFTER · key ${esc(ansTxt(aft.answer))}</h4>${clean(aft.question)}${solChanged?`<hr><h4>Solution</h4>${clean(aft.solution)}`:""}</div>`:`<div class="pane"><h4>SOLUTION</h4>${clean(g.q.solution)}</div>`}</div>
+ <details class="raw"><summary>Show raw change (HTML)</summary>${edits.map((e,i)=>`<div class="m" style="margin-top:8px">${e.field}</div><span class="diff"><del>${esc(e.find===W?"(entire field)":e.find)}</del> → ${editing?`<input data-i="${i}" value="${esc(e.replace)}">`:`<ins>${esc(e.replace)}</ins>`}</span>`).join("")}</details></div>
+ <div class="card"><h3>Student reply (preview)</h3><textarea id="rep" rows="3" ${d?"disabled":""}>${esc(g.reply)}</textarea><div class="bub">${esc(g.reply)}</div></div>
+ <div class="card row actbar">${d?`<span class="chip ok">${d.action} · ${new Date(d.at).toLocaleTimeString()}</span><button id="undo">Undo</button>`:
+ `<button class="ok" data-a="approve">${g.edits.length&&g.route!=="auto_apply"?"Approve &amp; apply":"Approve"} <span class="m">A</span></button>
+ <button data-a="edit">${editing?"Save edit":"Edit"} <span class="m">E</span></button><button class="no" data-a="reject">Reject <span class="m">R</span></button>`}
+ <span class="m">Approve writes the change and sends the reply. Every action is logged.</span></div>
+ <div class="card audit"><h3>Audit trail</h3>${audit.filter(a=>a.q===g.id).map(a=>`<div>${new Date(a.at).toLocaleString()} · <b>${a.action}</b> · ${esc(a.note||"")}</div>`).join("")||'<div class="m">No actions yet. The engine’s own proposal is logged as “ai_proposed”.</div>'}</div>`;
+}
+function act(a){const g=grp.find(x=>x.id===sel);if(!g||dec[g.id])return;
+ if(a==="edit"){if(!editing){editing=true;g._edits=JSON.parse(JSON.stringify(g.edits))}else{document.querySelectorAll("input[data-i]").forEach(i=>g._edits[+i.dataset.i].replace=i.value);g.edits=g._edits;editing=false;log(g,"edited","replacement text changed by faculty")}return detail()}
+ const rep=$("#rep").value;if(rep!==g.reply){g.reply=rep;log(g,"reply_edited","")}
+ dec[g.id]={action:a==="approve"?"approved":"rejected",at:Date.now()};log(g,dec[g.id].action,a==="approve"?(g.edits.length?"change applied; reply sent":"reply sent"):"change not applied");save();editing=false;render()}
+function log(g,action,note){audit.push({q:g.id,action,note,at:Date.now(),by:"faculty"});save()}
+document.addEventListener("click",e=>{const t=e.target.closest("button");if(!t)return;
+ if(t.dataset.t){tab=t.dataset.t;sel=null;editing=false;render()}else if(t.dataset.id){sel=t.dataset.id;editing=false;render();$("#detail").scrollIntoView({block:"start"})}
+ else if(t.dataset.a)act(t.dataset.a);else if(t.id==="undo"){const g=grp.find(x=>x.id===sel);delete dec[sel];log(g,"undone","");save();render()}
+ else if(t.id==="th"){const r=document.documentElement;r.dataset.theme=(r.dataset.theme||(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light"))==="dark"?"light":"dark"}
+ else if(t.id==="exp"){const b=new Blob([JSON.stringify(audit,null,1)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="audit.json";a.click()}});
+document.addEventListener("keydown",e=>{if(/INPUT|TEXTAREA/.test(e.target.tagName))return;
+ const L=[...document.querySelectorAll(".item")].map(x=>x.dataset.id),i=L.indexOf(sel);
+ if(e.key==="j"&&L[i+1]){sel=L[i+1];render()}else if(e.key==="k"&&L[i-1]){sel=L[i-1];render()}
+ else if(e.key==="a")act("approve");else if(e.key==="r")act("reject");else if(e.key==="e")act("edit")});
+render();
+</script></body></html>
